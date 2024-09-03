@@ -6,7 +6,11 @@
     <title>Document</title>
 </head>
 <body>
+    {{ data }}
+    {% for i in data %}
     <h1>Back_main 브랜치</h1>
     <h1>로그인 작업</h1>
+    {{ i.name }}
+    {% endfor %}
 </body>
 </html>

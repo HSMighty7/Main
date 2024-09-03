@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect
 from .models import User
+from .models import Place
 from django.contrib.auth import authenticate, login, logout
 
 def index(request):
-    return render(request, 'main/index.html')
+    data = Place.objects.all()
+    # data = Place.objects.filter(name='수원화성')
+    print(data)
+    return render(request, 'main/index.html', {'data' : data})
 
 def login_index(request):
     if request.method == 'POST':

@@ -14,4 +14,4 @@ DATABASES = {
 
 SECRET_KEY = {
     'secret' : 'django-insecure-9#%$kd)a=8st2&3px35qmf=!$_0%$&8h1rm)$h&#v_&@rp^79h'
-    }
+}

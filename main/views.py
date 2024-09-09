@@ -23,7 +23,6 @@ def login_index(request):
             userObject = authenticate(request, username = username, password = password)
 
             if userObject is not None:
-
                 login(request, userObject)
 
             

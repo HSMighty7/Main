@@ -28,11 +28,6 @@
             <div>새로운 비밀번호 : <input name="new_password" type="password"></div>
             <div>비밀번호 확인 : <input name="new_password_confirm" type="password"></div>
             <div><button type="submit" name="account" value="update">정보 수정</button></div>
-            
-            <form action="{% url 'users:LogoutUrl' %}">
-                {% csrf_token %}
-                <button type="submit">로그아웃</button>
-            </form>
     
         </form>
 

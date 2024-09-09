@@ -26,6 +26,16 @@
             {% csrf_token %}
             <button type="submit">로그아웃</button>
         </form>
+
+        <form action="{% url 'users:UpdateUrl' %}">
+            {% csrf_token %}
+            <button type="submit">아이디 변경 폼</button>
+        </form>
+
+        <form action="{% url 'users:DeleteUrl' %}">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">회원 삭제 폼</button>
+        </form>
         
         <h2><a href="{% url 'users:UpdateUrl' %}">아이디 변경</a></h2>
         <h2><a href="{% url 'users:DeleteUrl' %}" onclick="return confirm('정말 삭제하시겠습니까?')">회원 삭제</a></h2>

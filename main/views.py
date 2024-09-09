@@ -12,7 +12,6 @@ def index(request):
     return render(request, 'main/index.html', {'places' : places,
                                                'cafes' : cafes,
                                                'restaurants' : restaurants})
-@csrf_exempt
 def login_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -38,12 +37,10 @@ def login_index(request):
 
     return render(request, 'user/login.html', { })
 
-@csrf_exempt
 def logout_index(request):
     logout(request)
     return redirect('users:LoginUrl')
 
-@csrf_exempt
 def join_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -76,7 +73,6 @@ def join_index(request):
 
     return render(request, 'user/join.html', {})
 
-@csrf_exempt
 def update_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -112,7 +108,6 @@ def update_index(request):
 
     return render(request, 'user/update.html', {})
 
-@csrf_exempt
 def delete_index(request):
     request.user.delete()
     logout(request)

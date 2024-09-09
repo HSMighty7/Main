@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect
 from .models import User
 from .models import Place
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import check_password
 
 def index(request):
-    data = Place.objects.all()
-    # data = Place.objects.filter(name='수원화성')
-    print(data)
-    return render(request, 'main/index.html', {'data' : data})
+    places = Place.objects.filter(category = '명소').order_by('?')[:5]
+    cafes = Place.objects.filter(category = '카페').order_by('?')[:5]
+    restaurants = Place.objects.filter(category = '식당').order_by('?')[:5]
+    return render(request, 'main/index.html', {'places' : places,
+                                               'cafes' : cafes,
+                                               'restaurants' : restaurants})
 
 def login_index(request):
     if request.method == 'POST':
@@ -25,7 +28,7 @@ def login_index(request):
 
             
             else:
-                print('fail')
+                return render(request, 'user/login.html', {'error_msg' : '아이디 또는 비밀번호가 올바르지 않습니다.'})
 
         else:
             return redirect('users:JoinUrl')
@@ -70,4 +73,42 @@ def join_index(request):
 
     return render(request, 'user/join.html', {})
                 
-        
+def update_index(request):
+    if request.method == 'POST':
+        account = request.POST.get('account')
+
+        if account == 'update':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            
+            try:
+                user = User.objects.get(username = username)
+            except:
+                return render(request, 'user/update.html', {'error_msg':'아이디 혹은 비밀번호가 잘못되었습니다.'})
+            
+            if check_password(password, user.username):
+                newusername = request.POST.get('new_username')
+                newpassword = request.POST.get('new_password')
+                confirm = request.POST.get('new_password_confirm')
+                
+                if(newpassword == confirm):
+                    user.username = newusername
+                    user.set_password(newpassword)
+                    user.save()
+                else:
+                    return render(request, 'user/update.html', {'error_msg':'비밀번호가 일치하지 않습니다.'})
+                
+            else:
+                return render(request, 'user/update.html', {'error_msg':'아이디 혹은 비밀번호가 잘못되었습니다.'})
+            
+        else:
+            return redirect('users:LoginUrl')
+    else:
+        pass
+
+    return render(request, 'user/update.html', {})
+
+def delete_index(request):
+    request.user.delete()
+    logout(request)
+    return redirect('users:LoginUrl')

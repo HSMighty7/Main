@@ -6,20 +6,29 @@
     <title>로그인</title>
 </head>
 <body>
+    <h2><a href="{% url 'index' %}">메인</a></h2>
 
     <h1>로그인 페이지</h1>
     <br>
     <div>로그인</div>
     <br>
 
+    {% if error_msg %}
+    <div>
+        {{ error_msg }}
+    </div>
+    {% endif%}
+    
     {% if user.is_authenticated %}
 
         <div>{{ user.username }} 님으로 로그인 성공</div>
         <form action="{% url 'users:LogoutUrl' %}">
             {% csrf_token %}
-
             <button type="submit">로그아웃</button>
         </form>
+        
+        <h2><a href="{% url 'users:UpdateUrl' %}">아이디 변경</a></h2>
+        <h2><a href="{% url 'users:DeleteUrl' %}" onclick="return confirm('정말 삭제하시겠습니까?')">회원 삭제</a></h2>
 
     {% else %}
 

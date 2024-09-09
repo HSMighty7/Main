@@ -32,6 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
+    '3.34.65.40',
     'mighty7.site',
     '127.0.0.1'
 ]

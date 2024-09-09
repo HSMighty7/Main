@@ -38,7 +38,6 @@ def login_index(request):
 
     return render(request, 'user/login.html', { })
 
-@login_required
 def logout_index(request):
     logout(request)
     return redirect('users:LoginUrl')
@@ -74,8 +73,7 @@ def join_index(request):
         return redirect('users:LoginUrl')
 
     return render(request, 'user/join.html', {})
-    
-@login_required            
+
 def update_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -111,7 +109,6 @@ def update_index(request):
 
     return render(request, 'user/update.html', {})
 
-@login_required
 def delete_index(request):
     request.user.delete()
     logout(request)

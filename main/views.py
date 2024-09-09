@@ -3,6 +3,7 @@ from .models import User
 from .models import Place
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     places = Place.objects.filter(category = '명소').order_by('?')[:5]
@@ -37,6 +38,7 @@ def login_index(request):
 
     return render(request, 'user/login.html', { })
 
+@login_required
 def logout_index(request):
     logout(request)
     return redirect('users:LoginUrl')
@@ -72,7 +74,8 @@ def join_index(request):
         return redirect('users:LoginUrl')
 
     return render(request, 'user/join.html', {})
-                
+    
+@login_required            
 def update_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -108,6 +111,7 @@ def update_index(request):
 
     return render(request, 'user/update.html', {})
 
+@login_required
 def delete_index(request):
     request.user.delete()
     logout(request)

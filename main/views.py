@@ -3,7 +3,7 @@ from .models import User
 from .models import Place
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
-from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 def index(request):
     places = Place.objects.filter(category = '명소').order_by('?')[:5]
@@ -111,3 +111,52 @@ def delete_index(request):
     request.user.delete()
     logout(request)
     return redirect('users:LoginUrl')
+
+def search_index(request):
+    if request.method == 'POST':
+        
+        search = request.POST.get('search')
+        search_category = request.POST.get('search_category')
+        print(search_category)
+        
+        search_text = request.POST.get('search_text')
+        if not search_text.strip():
+                return render(request, 'main/search.html', {'error_msg':'검색어를 입력하세요.'})
+            
+        if search == 'search' and search_category == 'None':
+            q_filter = Q()
+            for field in ["name", "location"]:
+                q_filter |= Q(**{f"{field}__icontains": search_text})
+                
+            places = Place.objects.filter(q_filter, category = '명소')
+            cafes = Place.objects.filter(q_filter, category = '카페')
+            restaurants = Place.objects.filter(q_filter, category = '식당')
+            
+            return render(request, 'main/search.html', {'places' : places,
+                                                        'cafes' : cafes,
+                                                        'restaurants' : restaurants})
+        
+        elif search == 'search' and search_category == 'Name':
+                
+            places = Place.objects.filter(name__contains = search_text, category = '명소')
+            cafes = Place.objects.filter(name__contains = search_text, category = '카페')
+            restaurants = Place.objects.filter(name__contains = search_text, category = '식당')
+            
+            return render(request, 'main/search.html', {'places' : places,
+                                                        'cafes' : cafes,
+                                                        'restaurants' : restaurants})
+        
+        elif search == 'search' and search_category == 'Location':
+                
+            places = Place.objects.filter(location__contains = search_text, category = '명소')
+            cafes = Place.objects.filter(location__contains = search_text, category = '카페')
+            restaurants = Place.objects.filter(location__contains = search_text, category = '식당')
+            
+            return render(request, 'main/search.html', {'places' : places,
+                                                        'cafes' : cafes,
+                                                        'restaurants' : restaurants})
+            
+        
+        return render(request, 'main/search.html', {'error_msg':'검색이 올바르지 않습니다.'})
+    else:
+        return render(request, 'main/search.html')

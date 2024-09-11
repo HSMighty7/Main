@@ -164,7 +164,7 @@ CORS_ALLOW_HEADERS = (
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000",
                         'http://localhost',
                         'http://localhost:8000',
-                        'mighty7.site',]
+                        'https://mighty7.site',]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True

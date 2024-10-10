@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 수정</title>
+</head>
+<body>
+    <h2><a href="{% url 'index' %}">메인</a></h2>
+
+    <h1>회원 정보 수정 페이지</h1>
+    <br>
+    <div>회원 정보 수정</div>
+    <br>  
+    {% if user.is_authenticated %}
+
+        <div>{{ user.username }} 님으로 로그인 중</div>
+        <form action="{% url 'users:UpdateUrl' %}" method="post">
+            {% csrf_token %}
+            {% if error_msg %}
+            <div>
+                {{ error_msg }}
+            </div>
+            {% endif%}
+            
+            <div>기존 아이디 : <input name="username" type="text"></div>
+            <div>새로운 아이디 : <input name="new_username" type="text"></div>
+            <div>기존 비밀번호 : <input name="password" type="password"></div>
+            <div>새로운 비밀번호 : <input name="new_password" type="password"></div>
+            <div>비밀번호 확인 : <input name="new_password_confirm" type="password"></div>
+            <div><button type="submit" name="account" value="update">정보 수정</button></div>
+    
+        </form>
+
+    {% else %}
+        <h1>로그인 후에 재시도하세요.</h1>
+        <h2><a href="{% url 'users:LoginUrl' %}">로그인 링크</a></h2>
+    {% endif %}
+</body>
+</html>

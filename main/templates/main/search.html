@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEARCH</title>
+</head>
+<body>
+    <h2><a href="{% url 'index' %}">메인</a></h2>
+
+    <h1>검색 결과 받아오기</h1>
+    <h2>명소</h2>
+
+    {% if user.is_authenticated %}
+
+        <form action="{% url 'SearchUrl' %}" method="post">
+            {% csrf_token %}
+            <div>
+                <select name="search_category">
+                    <option value="None">없음</option>
+                    <option value="Name">이름</option>
+                    <option value="Location">주소</option>
+                </select>
+                검색어 : <input name="search_text" type="text" placeholder="검색어를 입력하세요.">
+
+                <button type="submit" name="search" value="search">검색</button>
+            </div>
+
+        </form>
+
+        <hr>
+
+        {% if error_msg %}
+        <div>
+            {{ error_msg }}
+        </div>
+        {% endif %}
+
+
+        {% if places %}
+            {% for place in places %}
+                이름 : {{ place.name }} <br>
+                <form action="{% url 'MapUrl' %}" method="post">
+                    {% csrf_token %}
+                    <input name="dest_location" type="text" value="{{ place.location }}" readonly>
+                    <button type="submit" name="map" value="visual">경로 시각화</button>
+                </form>    
+                <hr>
+            {% endfor %}
+
+        {% else %}
+            <p>검색된 결과가 없습니다.</p>
+
+        {% endif %}
+
+        <hr>
+
+        <h2>식당</h2>
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+            이름 : {{ restaurant.name }} <br>
+            <form action="{% url 'MapUrl' %}" method="post">
+                {% csrf_token %}
+                <input name="dest_location" type="text" value="{{ restaurant.location }}" readonly>
+                <button type="submit" name="map" value="visual">경로 시각화</button>
+            </form>    
+            <hr>
+            {% endfor %}
+
+            {% else %}
+            <p>검색된 결과가 없습니다.</p>
+
+        {% endif %}
+
+        <hr>
+
+        <h2>카페</h2>
+        {% if cafes %}
+            {% for cafe in cafes %}
+            이름 : {{ cafe.name }} <br>
+            <form action="{% url 'MapUrl' %}" method="post">
+                {% csrf_token %}
+                <input name="dest_location" type="text" value="{{ cafe.location }}" readonly>
+                <button type="submit" name="map" value="visual">경로 시각화</button>
+            </form>    
+            <hr>
+            {% endfor %}
+
+            {% else %}
+            <p>검색된 결과가 없습니다.</p>
+            
+        {% endif %}
+    {% else %}
+    <h1>로그인 먼저 진행하세요.</h1>
+    {% endif %}
+</body>
+</html>

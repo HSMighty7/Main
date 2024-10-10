@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button type="button">
+        <a href="{% url 'users:LoginUrl' %}">Login</a>
+    </button>
+    
+    <button type="button">
+        <a href="{% url 'users:JoinUrl' %}">Join</a>
+    </button>
+
+    <form action="{% url 'SearchUrl' %}">
+        {% csrf_token %}
+        <button type="submit">검색 페이지</button>
+    </form>
+
+    <form action="{% url 'LocationUrl' %}">
+        {% csrf_token %}
+        <button type="submit">현재 위치</button>
+    </form>
+
+    <h1>DB 데이터 받아오기</h1>
+    <h2>명소</h2>
+    {% if places %}
+        {% for place in places %}
+        {{ place.name }}
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    <h2>식당</h2>
+    {% if restaurants %}
+        {% for restaurant in restaurants %}
+        {{ restaurant.name }}
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    <h2>카페</h2>
+    {% if cafes %}
+        {% for cafe in cafes %}
+        {{ cafe.name }}
+        {% endfor %}
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <h2>{{name}}님의 이전 검색 리스트</h2> <hr>
+        
+        {% if search_places %}
+            {% for search in search_places %}
+                <h3>이름 : {{ search.name }}</h3> 
+                <h3>주소 : {{ search.location }} </h3> <hr>
+            {% endfor %}
+
+        {% else %}
+            <h2>이전 검색 기록이 없습니다.</h2>
+
+        {% endif %}
+    {% endif %}
+</body>
+</html>

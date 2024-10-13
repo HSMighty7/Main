@@ -219,7 +219,6 @@ def map_index(request):
         except:
             return render(request, 'main/map.html', {'error_msg' : "현재 위치 등록이 되어있지 않습니다."})
         
-        
         try:
             place = Place.objects.get(location = dst_location)
             dst_lat = float(place.lat)

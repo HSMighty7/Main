@@ -12,7 +12,6 @@
     <h2>명소</h2>
 
     {% if user.is_authenticated %}
-
         <form action="{% url 'SearchUrl' %}" method="post">
             {% csrf_token %}
             <div>
@@ -89,6 +88,17 @@
             {% else %}
             <p>검색된 결과가 없습니다.</p>
             
+        {% endif %}
+
+        <h3>{{name}}님의 이전 검색 리스트</h3> <hr>    
+        {% if search_places %}
+            {% for search in search_places %}
+                <h3>이름 : {{ search.name }}</h3> 
+                <h3>주소 : {{ search.location }} </h3> <hr>
+            {% endfor %}
+
+        {% else %}
+            <h3>이전 검색 기록이 없습니다.</h3>
         {% endif %}
     {% else %}
     <h1>로그인 먼저 진행하세요.</h1>

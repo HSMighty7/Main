@@ -1,34 +1,57 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    {% load static %}
+    <!-- 부트스트랩 및 커스텀 CSS 추가 -->
+    {% load django_bootstrap5 %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <!-- CSS 파일 로드 -->
+    <link rel="stylesheet" href="{% static 'css/join.css' %}">
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
 </head>
 <body>
-    <h2><a href="{% url 'users:LoginUrl' %}">로그인</a></h2>
-    <h2><a href="{% url 'index' %}">메인</a></h2>
-    <h1>아이디 만들기</h1>
-    <div>새로운 아이디</div>
+    <div class="container">
+        <form action="{% url 'users:JoinUrl' %}" method="post">
+            {% csrf_token %}
 
-    {% if error_msg %}
-    <div>
-        {{ error_msg }}
+            <!-- 상단 링크 -->
+            
+            <!-- <div class="link-container">
+                <button class="link-button" onclick="window.location.href='{% url 'users:LoginUrl' %}'">로그인</button>
+                <button class="link-button" onclick="window.location.href='{% url 'index' %}'">메인</button>
+            </div> -->
+            
+
+            <h1>회원 정보 입력</h1>
+            <p>새로운 아이디와 비밀번호를 입력하세요.</p>
+
+            {% if error_msg %}
+            <div class="error_msg">
+                {{ error_msg }}
+            </div>
+            {% endif %}
+
+            <!-- 입력 폼 -->
+            <input type="text" name="username" placeholder="아이디" required>
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <input type="password" name="password_check" placeholder="비밀번호 확인" required>
+
+            <!-- 버튼들 -->
+            <button type="submit" value="create" name="account">회원가입</button>
+            
+            <div class="link_container">
+                <a href="{% url 'users:LoginUrl' %}" class="link_style">로그인</a>
+                <a href="{% url 'index' %}" class="link_style">메인</a>
+             
+            </div>
+
+            
+        </form>
     </div>
-    {% endif%}
-
-    <form action="{% url 'users:JoinUrl' %}" method="post">
-        {% csrf_token %}
-
-        <div>아이디 : <input type="text" name="username"></div>
-        <div>비밀번호 : <input type="password" name="password"></div>
-        <div>비밀번호 확인 : <input type="password" name="password_check"></div>
-        <div>
-            <button type="submit" value="create" name="account">완료</button>
-            <button type="submit" value="cancel" name="account">취소</button>
-        </div>
-
-    </form>
-
 </body>
 </html>

@@ -7,15 +7,31 @@ from django.db.models import Q
 import folium
 import osmnx as ox
 import networkx as nx
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     places = Place.objects.filter(category = '명소').order_by('?')[:5]
     cafes = Place.objects.filter(category = '카페').order_by('?')[:5]
     restaurants = Place.objects.filter(category = '식당').order_by('?')[:5]
     
-    return render(request, 'main/index.html', {'places' : places,
+    try:
+        user = request.user
+        search_list = Search.objects.filter(user_id = user).values("pl_id_id")
+        search_places = Place.objects.filter(id__in = search_list)
+        
+        return render(request, 'main/index.html', {'places' : places,
+                                               'cafes' : cafes,
+                                               'restaurants' : restaurants,
+                                               'search_places' : search_places,
+                                               'name' : user.username})
+        
+    except:
+        return render(request, 'main/index.html', {'places' : places,
                                                'cafes' : cafes,
                                                'restaurants' : restaurants,})
+
 def login_index(request):
     if request.method == 'POST':
         account = request.POST.get('account')
@@ -24,21 +40,21 @@ def login_index(request):
             username = request.POST.get('username')
             password = request.POST.get('password')
 
-            userObject = authenticate(request, username = username, password = password)
+            userObject = authenticate(request, username=username, password=password)
 
             if userObject is not None:
                 login(request, userObject)
-
-            
+                return redirect('/')  # 로그인 성공 시 메인 페이지로 리다이렉트
             else:
-                return render(request, 'user/login.html', {'error_msg' : '아이디 또는 비밀번호가 올바르지 않습니다.'})
+                # 로그인 실패 시 오류 메시지를 전달하고 다시 로그인 페이지를 렌더링
+                return render(request, 'user/login.html', {'error_msg': '아이디 또는 비밀번호가 올바르지 않습니다.'})
 
         else:
+            # 회원가입 페이지로 리다이렉트
             return redirect('users:JoinUrl')
-    else:
-        pass
 
-    return render(request, 'user/login.html', { })
+    # GET 요청인 경우 로그인 페이지를 렌더링
+    return render(request, 'user/login.html', {})
 
 def logout_index(request):
     logout(request)
@@ -65,15 +81,16 @@ def join_index(request):
             elif User.objects.filter(username=new_username).exists():
                 return render(request, 'user/join.html', {'error_msg':'이미 사용중인 아이디입니다.'})
             
-            new_users = User.objects.create_user(username=new_username, password=new_password)
-            new_users.save()
-            
+            # 새로운 사용자 생성
+            User.objects.create_user(username=new_username, password=new_password)
+
+            return redirect('users:LoginUrl')  # 회원가입 완료 후 로그인 페이지로 리다이렉트
         
         else:
-            pass
+            # account가 'create'가 아닐 경우 처리
+            return render(request, 'user/join.html', {'error_msg': '잘못된 요청입니다.'})
 
-        return redirect('users:LoginUrl')
-
+    # GET 요청일 때 회원가입 페이지 렌더링
     return render(request, 'user/join.html', {})
 
 def update_index(request):
@@ -81,40 +98,46 @@ def update_index(request):
         account = request.POST.get('account')
 
         if account == 'update':
-            username = request.POST.get('username')
+            # 현재 로그인된 사용자
+            current_user = request.user
             password = request.POST.get('password')
-            
-            try:
-                user = User.objects.get(username = username)
-            except:
-                return render(request, 'user/update.html', {'error_msg':'아이디 혹은 비밀번호가 잘못되었습니다.'})
-            
-            if check_password(password, user.username):
-                newusername = request.POST.get('new_username')
-                newpassword = request.POST.get('new_password')
-                confirm = request.POST.get('new_password_confirm')
-                
-                if(newpassword == confirm):
-                    user.username = newusername
-                    user.set_password(newpassword)
-                    user.save()
+
+            # 비밀번호 확인
+            if current_user.check_password(password):
+                new_username = request.POST.get('new_username')
+                new_password = request.POST.get('new_password')
+                new_password_confirm = request.POST.get('new_password_confirm')
+
+                # 새 비밀번호와 확인 비밀번호가 일치하는지 확인
+                if new_password == new_password_confirm:
+                    # 아이디 업데이트
+                    current_user.username = new_username if new_username else current_user.username
+                    # 비밀번호 업데이트
+                    if new_password:  # 새로운 비밀번호가 입력된 경우만 업데이트
+                        current_user.set_password(new_password)
+
+                    current_user.save()  # 변경 사항 저장
+
+                    # 사용자 로그아웃 처리
+                    logout(request)
+
+                    # 로그아웃 후 로그인 페이지로 리다이렉트
+                    return redirect('users:LoginUrl')
                 else:
-                    return render(request, 'user/update.html', {'error_msg':'비밀번호가 일치하지 않습니다.'})
-                
+                    return render(request, 'user/update.html', {'error_msg': '새 비밀번호가 일치하지 않습니다.'})
             else:
-                return render(request, 'user/update.html', {'error_msg':'아이디 혹은 비밀번호가 잘못되었습니다.'})
-            
+                return render(request, 'user/update.html', {'error_msg': '현재 비밀번호가 올바르지 않습니다.'})
         else:
             return redirect('users:LoginUrl')
     else:
-        pass
-        
-    return render(request, 'user/update.html', {})
+        return render(request, 'user/update.html')
 
 def delete_index(request):
-    request.user.delete()
-    logout(request)
-    return redirect('users:LoginUrl')
+    if request.user.is_authenticated:
+        user = request.user
+        logout(request)  # 로그아웃 처리
+        user.delete()    # 사용자 계정 삭제
+        return redirect('index')  # 메인 페이지로 리다이렉트
 
 def search_index(request):
     if request.method == 'GET':
@@ -228,6 +251,11 @@ def search_index(request):
     else:
         return render(request, 'main/search.html')
     
+def mypage_view(request):
+    # 로그인된 사용자의 정보를 마이페이지에 전달
+    return render(request, 'user/mypage.html', {'user': request.user})
+
+
 def location_index(request):
     if request.method == 'POST':
         location = request.POST.get('location')

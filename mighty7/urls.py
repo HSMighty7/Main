@@ -20,6 +20,7 @@ from main import views
 
 urlpatterns = [
     path('', views.index, name="index"),
+    path('search', views.search_index, name="SearchUrl"),
     path('location', views.location_index, name="LocationUrl"),
     path('map', views.map_index, name="MapUrl"),
     path('admin/', admin.site.urls),

@@ -16,21 +16,9 @@ def index(request):
     cafes = Place.objects.filter(category = '카페').order_by('?')[:5]
     restaurants = Place.objects.filter(category = '식당').order_by('?')[:5]
     
-    try:
-        user = request.user
-        search_list = Search.objects.filter(user_id = user).values("pl_id_id")
-        search_places = Place.objects.filter(id__in = search_list)
-        
-        return render(request, 'main/index.html', {'places' : places,
-                                               'cafes' : cafes,
-                                               'restaurants' : restaurants,
-                                               'search_places' : search_places,
-                                               'name' : user.username})
-        
-    except:
-        return render(request, 'main/index.html', {'places' : places,
-                                               'cafes' : cafes,
-                                               'restaurants' : restaurants,})
+    return render(request, 'main/index.html', {'places' : places,
+                                            'cafes' : cafes,
+                                            'restaurants' : restaurants,})
 
 def login_index(request):
     if request.method == 'POST':

@@ -824,5 +824,30 @@
       defer=""
       src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
     ></script>
+    <h1>추천 여행지</h1>
+    <h2>명소</h2>
+    {% if places %}
+        {% for place in places %}
+        {{ place.name }}
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    <h2>식당</h2>
+    {% if restaurants %}
+        {% for restaurant in restaurants %}
+        {{ restaurant.name }}
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    <h2>카페</h2>
+    {% if cafes %}
+        {% for cafe in cafes %}
+        {{ cafe.name }}
+        {% endfor %}
+    {% endif %}
   </body>
 </html>
